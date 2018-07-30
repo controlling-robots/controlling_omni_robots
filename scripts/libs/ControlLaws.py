@@ -5,16 +5,16 @@ class CircleControlLaw:
 
     k = 2
 
-    def __init__(self, R, v):
+    def __init__(self, v, R):
         """
         Constructor of Circle control law class.
-        :param R:
         :param v:
+        :param R:
         """
-        self.R = R
         self.v = v
+        self.R = R
 
-    def getControlCircle(self, x, y, alpha, center=(0, 0)):
+    def getControl(self, x, y, alpha, center=(0, 0)):
         """
         Returns control actions for axis of x and y velocities
         for Circle trajectory.
@@ -52,7 +52,7 @@ class LineControlLaw:
         self.beta = beta
         self.phi = phi
 
-    def getControlLine(self, x, y, alpha):
+    def getControl(self, x, y, alpha):
         """
         Returns control actions for axis of x and y velocities
         for Line trajectory.
@@ -77,16 +77,16 @@ class SinControlLaw:
 
     k = 2
 
-    def __init__(self, A, v):
+    def __init__(self, v, A):
         """
         Constructor of Sin control law class.
-        :param A: The amlitude of sinus curve.
         :param v: Desired velocity.
+        :param A: The amlitude of sinus curve.
         """
-        self.A = A
         self.v = v
+        self.A = A
 
-    def getControlSin(self, x, y, alpha):
+    def getControl(self, x, y, alpha):
         """
         Returns control actions for axis of x and y velocities
         for Sin trajectory.
