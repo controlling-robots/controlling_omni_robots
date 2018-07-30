@@ -34,18 +34,24 @@ class Controller:
             self.center = (0, 0)
 
         self.clock = Clock()
-        self.work()
+        self.state = (0, 0, 0)
+        # self.work()
 
     def __del__(self):
         self.file.close()
 
+    def set_center(self, center):
+        self.center = center
+
     def control_callback(self, cur_pose):
         t, dt = self.clock.getTandDT()
         lock.acquire()
+        p = cur_pose.pose.position
         q = cur_pose.pose.orientation
         cur_theta = euler_from_quaternion((q.x, q.y, q.z, q.w))[2]
         ux, uy, e = self.circle_law.getControl(cur_pose.pose.position.x, cur_pose.pose.position.y,
                                                cur_theta, (self.center[0], self.center[1]))
+        self.state = (p.x, p.y, cur_theta)
         lock.release()
 
         velocity = Twist()
@@ -65,7 +71,7 @@ if __name__=="__main__":
     """
         Read argumets from terminal.
         
-        Usege: circle_node.py robot_name v R x0 y0
+        Usage: circle_node.py robot_name v R x0 y0
     """
     rospy.init_node('circle_node')
 
@@ -82,4 +88,4 @@ if __name__=="__main__":
         contrller = Controller(robot_name, v, R, (x0, y0))
         contrller.work()
     else:
-        print('Usege: circle_node.py robot_name v R x0 y0')
+        print('Usage: circle_node.py robot_name v R x0 y0')

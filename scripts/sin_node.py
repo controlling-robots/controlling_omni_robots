@@ -30,7 +30,8 @@ class Controller:
         # Trajectory setup.
         self.sin_law = SinControlLaw(v, A)
         self.clock = Clock()
-        self.work()
+        self.state = (0, 0, 0)
+        # self.work()
 
     def __del__(self):
         self.file.close()
@@ -38,9 +39,11 @@ class Controller:
     def control_callback(self, cur_pose):
         t, dt = self.clock.getTandDT()
         lock.acquire()
+        p = cur_pose.pose.position
         q = cur_pose.pose.orientation
         cur_theta = euler_from_quaternion((q.x, q.y, q.z, q.w))[2]
         ux, uy, e = self.sin_law.getControl(cur_pose.pose.position.x, cur_pose.pose.position.y, cur_theta)
+        self.state = (p.x, p.y, cur_theta)
         lock.release()
 
         velocity = Twist()
@@ -61,7 +64,7 @@ if __name__=="__main__":
     """
         Read argumets from terminal.
         
-        Usege: line_node.py robot_name v A
+        Usage: line_node.py robot_name v A
         A: the amlitude of sinus along X-axis
     """
     rospy.init_node('circle_node')
@@ -73,4 +76,4 @@ if __name__=="__main__":
         contrller = Controller(robot_name, v, A)
         contrller.work()
     else:
-        print('Usege: line_node.py robot_name v A')
+        print('Usage: line_node.py robot_name v A')

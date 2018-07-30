@@ -17,6 +17,14 @@ lock = threading.Lock()
 class Controller:
 
     def __init__(self, robot_name, v, beta, phi):
+        """
+        var state = (xcur, ycur, thetacur)
+
+        :param robot_name:
+        :param v:
+        :param beta:
+        :param phi:
+        """
         file_name = "data_{}".format(robot_name)
         self.file = open(file_name, 'w')
 
@@ -29,7 +37,8 @@ class Controller:
         # Trajectory setup.
         self.line_law = LineControlLaw(v, beta, phi)
         self.clock = Clock()
-        self.work()
+        self.state = (0, 0, 0)
+        # self.work()
 
     def __del__(self):
         self.file.close()
@@ -37,9 +46,11 @@ class Controller:
     def control_callback(self, cur_pose):
         t, dt = self.clock.getTandDT()
         lock.acquire()
+        p = cur_pose.pose.position
         q = cur_pose.pose.orientation
         cur_theta = euler_from_quaternion((q.x, q.y, q.z, q.w))[2]
         ux, uy, e = self.line_law.getControl(cur_pose.pose.position.x, cur_pose.pose.position.y, cur_theta)
+        self.state = (p.x, p.y, cur_theta)
         lock.release()
 
         velocity = Twist()
@@ -60,7 +71,7 @@ if __name__=="__main__":
     """
         Read argumets from terminal.
         
-        Usege: line_node.py robot_name v beta phi
+        Usage: line_node.py robot_name v beta phi
         beta: angle between Y and line in global frame
         phi: value on the Y-asis
     """
@@ -73,4 +84,4 @@ if __name__=="__main__":
         contrller = Controller(robot_name, v, beta, phi)
         contrller.work()
     else:
-        print('Usege: line_node.py robot_name v beta phi')
+        print('Usage: line_node.py robot_name v beta phi')
