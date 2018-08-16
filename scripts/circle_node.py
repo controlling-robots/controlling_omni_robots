@@ -6,7 +6,7 @@ import rospy
 import threading, sys
 from tf.transformations import euler_from_quaternion
 from Clock import Clock
-from .libs.ControlLaws import CircleControlLaw
+from ControlLaws import CircleControlLaw
 
 from geometry_msgs.msg import Twist
 from robotino_msgs.msg import NorthStarReadings
@@ -17,7 +17,7 @@ lock = threading.Lock()
 class Controller:
 
     def __init__(self, robot_name, v, R, center=None):
-        file_name = "data_{}".format(robot_name)
+        file_name = "data_{}.txt".format(robot_name)
         self.file = open(file_name, 'w')
 
         sub_topic = "/{}/north_star".format(robot_name)
@@ -79,13 +79,13 @@ if __name__=="__main__":
         robot_name = sys.argv[1]
         (v, R) = sys.argv[2:]
 
-        contrller = Controller(robot_name, v, R)
+        contrller = Controller(robot_name, float(v), float(R))
         contrller.work()
     elif len(sys.argv) == 6:
         robot_name = sys.argv[1]
-        (R, v, x0, y0) = sys.argv[2:]
+        (v, R, x0, y0) = sys.argv[2:]
 
-        contrller = Controller(robot_name, v, R, (x0, y0))
+        contrller = Controller(robot_name, float(v), float(R), (float(x0), float(y0)))
         contrller.work()
     else:
         print('Usage: circle_node.py robot_name v R x0 y0')

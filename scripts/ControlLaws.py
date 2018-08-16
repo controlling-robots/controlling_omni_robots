@@ -31,8 +31,8 @@ class CircleControlLaw:
         us_y = - self.v * (x * cos(alpha) - x0 * cos(alpha) + y * sin(alpha) - y0 * sin(alpha)) / denom
         ue_x = -self.k * (2 * x - 2 * x0) * e
         ue_y = -self.k * (2 * y - 2 * y0) * e
-        ux = us_x + ue_x
-        uy = us_y + ue_y
+        ux = (us_x + ue_x)
+        uy = (us_y + ue_y)
         return ux, uy, e
 
 

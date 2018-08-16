@@ -7,7 +7,7 @@ import threading, sys
 from numpy import pi
 from tf.transformations import euler_from_quaternion
 from Clock import Clock
-from .libs.ControlLaws import SinControlLaw
+from ControlLaws import SinControlLaw
 
 from geometry_msgs.msg import Twist
 from robotino_msgs.msg import NorthStarReadings
@@ -18,7 +18,7 @@ lock = threading.Lock()
 class Controller:
 
     def __init__(self, robot_name, v, A):
-        file_name = "data_{}".format(robot_name)
+        file_name = "data_{}.txt".format(robot_name)
         self.file = open(file_name, 'w')
 
         sub_topic = "/{}/north_star".format(robot_name)
@@ -49,7 +49,7 @@ class Controller:
         velocity = Twist()
         velocity.linear.x = ux
         velocity.linear.y = uy
-        velocity.angular.z = 2 * (pi/2 - cur_theta)     # !!! rotation controller
+        #velocity.angular.z = 2 * (pi/2 - cur_theta)     # !!! rotation controller
         self.pub_vels.publish(velocity)
 
         self.file.write("{} {} {} {}\n".format(t, cur_pose.pose.position.x, cur_pose.pose.position.y, e))
@@ -73,7 +73,7 @@ if __name__=="__main__":
         robot_name = sys.argv[1]
         (v, A) = sys.argv[2:]
 
-        contrller = Controller(robot_name, v, A)
+        contrller = Controller(robot_name, float(v), float(A))
         contrller.work()
     else:
         print('Usage: line_node.py robot_name v A')

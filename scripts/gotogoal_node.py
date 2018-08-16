@@ -26,10 +26,11 @@ lock = threading.Lock()
 
 class Controller:
 
-    k = 1
+    k = 0.5
+    k2 = 2
 
     def __init__(self, robot_name, goal):
-        file_name = "data_{}".format(robot_name)
+        file_name = "data_{}.txt".format(robot_name)
         self.file = open(file_name, 'w')
 
         sub_topic = "/{}/north_star".format(robot_name)
@@ -61,18 +62,20 @@ class Controller:
         lock.acquire()
         e_x = self.goal.x - cur_pose.pose.position.x
         e_y = self.goal.y - cur_pose.pose.position.y
-        e_theta = self.goal.z - eu[2]
+        e_theta = 0 - eu[2]  # self.goal.z - eu[2]
         lock.release()
 
         e = sqrt(e_x ** 2 + e_y ** 2)  # euclid error
 
-        self.file.write("{} {} {} {}\n".format(t, cur_pose.pose.position.x, cur_pose.pose.position.y, e))
+        # self.file.write("{} {} {} {}\n".format(t, cur_pose.pose.position.x, cur_pose.pose.position.y, e))
 
         velocity = Twist()
         if abs(e) > 0.05:
-            velocity.linear.x = self.k * e_y
-            velocity.linear.y = -self.k * e_x
-        velocity.angular.z = self.k * e_theta
+            # velocity.linear.x = self.k * e_y
+            # velocity.linear.y = -self.k * e_x
+            velocity.linear.x = self.k * e_x
+            velocity.linear.y = self.k * e_y
+        velocity.angular.z = 4 * e_theta
         self.pub_vels.publish(velocity)
 
     def work(self):
